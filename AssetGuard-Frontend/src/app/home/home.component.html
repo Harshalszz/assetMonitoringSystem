@@ -1,0 +1,266 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-12">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div>
+          <a class="navbar-brand" href="#">Asset Monitoring system</a>
+        </div>
+
+      </nav>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <!-- First Division: Sensors -->
+    <div class="col-lg-3 sensors-container">
+      <div class="card sensor-card" (click)="startTemperatureSensor()" (click)="selectSensor('TEMPERATURE')"
+        [class.selected]="selectedSensorType === 'TEMPERATURE'">
+        <div class="card-header">
+          <i class="fa fa-thermometer sensor-icon"></i>
+          Temperature Sensor Data
+        </div>
+        <div class="card-body">
+          <p class="card-text">{{ latestTemperatureReading?.sensor_name }}: {{ latestTemperatureReading?.reading_value
+            }}</p>
+          <p class="card-subtitle text">{{ latestTemperatureReading?.reading_timestamp | date:'short' }}</p>
+        </div>
+      </div>
+
+      <div class="card sensor-card" (click)="startCoolingSensor()" (click)="selectSensor('COOLING')"
+        [class.selected]="selectedSensorType === 'COOLING'">
+        <div class="card-header">
+          <i class="fa fa-snowflake sensor-icon"></i>
+          Cooling Sensor Data
+        </div>
+        <div class="card-body">
+          <p class="card-text">{{ latestCoolingReading?.sensor_name }}: {{ latestCoolingReading?.reading_value }}</p>
+          <p class="card-subtitle text">{{ latestCoolingReading?.reading_timestamp | date:'short' }}</p>
+        </div>
+      </div>
+
+      <div class="card sensor-card" (click)="startVoltageSensor()" (click)="selectSensor('VOLTAGE')"
+        [class.selected]="selectedSensorType === 'VOLTAGE'">
+        <div class="card-header">
+          <i class="fa fa-bolt sensor-icon"></i>
+          Voltage Sensor Data
+        </div>
+        <div class="card-body">
+          <p class="card-text">{{ latestVoltageReading?.sensor_name }}: {{ latestVoltageReading?.reading_value }}</p>
+          <p class="card-subtitle text">{{ latestVoltageReading?.reading_timestamp | date:'short' }}</p>
+        </div>
+      </div>
+
+      <div class="card sensor-card" (click)="startBandwidthSensor()" (click)="selectSensor('BANDWIDTH')"
+        [class.selected]="selectedSensorType === 'BANDWIDTH'">
+        <div class="card-header">
+          <i class="fa fa-wifi sensor-icon"></i>
+          Bandwidth Sensor Data
+        </div>
+        <div class="card-body">
+          <p class="card-text">{{ latestBandwidthReading?.sensor_name }}: {{ latestBandwidthReading?.reading_value }}
+          </p>
+          <p class="card-subtitle text">{{ latestBandwidthReading?.reading_timestamp | date:'short' }}</p>
+        </div>
+      </div>
+
+      <div class="card sensor-card" (click)="startTrafficSensor()" (click)="selectSensor('TRAFFIC')"
+        [class.selected]="selectedSensorType === 'TRAFFIC'">
+        <div class="card-header">
+          <!-- <i class="fa fa-car sensor-icon"></i> -->
+          <i class="fa fa-users" aria-hidden="true"></i>
+          Traffic Sensor Data
+        </div>
+        <div class="card-body">
+          <p class="card-text">{{ latestTrafficReading?.sensor_name }}: {{ latestTrafficReading?.reading_value }}</p>
+          <p class="card-subtitle text">{{ latestTrafficReading?.reading_timestamp | date:'short' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Second Division: Chart and Selected Sensor Stats -->
+
+    <div class="col-lg-6">
+      <div class="chart-container" style="overflow-y: auto;">
+        <div *ngIf="selectedSensorType">
+          <app-chart [sensorName]="selectedSensorType"></app-chart>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-12 d-flex justify-content-end">
+            <button (click)="stopReading()" class="btn btn-danger">Stop Sensor</button>
+          </div>
+        </div>
+
+        <div class="selected-stats-container">
+          <!-- Display selected sensor stats here -->
+          <div class="card selected-sensor-card" *ngIf="selectedSensorStats">
+            <div class="card-body d-flex align-items-center">
+              <div class="selected-sensor-reading-value">
+                <h4 class="mb-0">{{ selectedSensorStats?.reading_value | number:'1.2-2' }}</h4>
+              </div>
+              <div class="ml-auto text-right" style="margin-left: 345px;">
+                <h5 style="margin-bottom: 0;">{{ selectedSensorStats?.sensor_name }}</h5>
+                <p class="card-subtitle text-muted" style="margin-bottom: 0; ">{{ selectedSensorStats?.reading_timestamp
+                  | date:'short' }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="card selected-sensor-card no-data-card" *ngIf="!selectedSensorStats">
+            <div class="card-body">
+              <p class="card-text">No data available</p>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+
+
+    <!-- Third Division: Notifications -->
+    <div class="col-lg notifications-container">
+      <div class="card-header">
+        Notifications
+      </div>
+      <div class="card selected-sensor-card p-3">
+        <div *ngIf="latestTemperatureReading?.reading_value < 48; else elseBlock">
+          <div class="alert alert-success align-items-center ">
+            <div>
+              
+              <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+              Temperature Status : Good
+            </div>
+
+          </div>
+
+        </div>
+        <ng-template #elseBlock>
+          <div class="alert alert-danger align-items-center ">
+            <div>
+              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+              Temperature Status : Bad
+            </div>
+
+          </div>
+
+        </ng-template>
+
+        <div *ngIf="latestCoolingReading?.reading_value > 68; else elseBlock1">
+          <div class="alert alert-success align-items-center ">
+            <div>
+              <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+              Cooling Status : Good
+            </div>
+
+          </div>
+
+        </div>
+        <ng-template #elseBlock1>
+          <div class="alert alert-danger align-items-center ">
+            <div>
+              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+              Cooling Status : Bad
+            </div>
+
+          </div>
+
+        </ng-template>
+
+
+        <!-- for voltage -->
+        <div *ngIf="latestVoltageReading?.reading_value > 220; else elseBlock2">
+          <div class="alert alert-success align-items-center ">
+            <div>
+              <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+              Voltage Status : Good
+            </div>
+
+          </div>
+
+        </div>
+        <ng-template #elseBlock2>
+          <div class="alert alert-danger align-items-center ">
+            <div>
+              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+              Voltage Status : Bad
+            </div>
+
+          </div>
+
+        </ng-template>
+
+
+        <!-- for bandwidht -->
+
+        <div *ngIf="latestBandwidthReading?.reading_value < 2500; else elseBlock3">
+          <div class="alert alert-success align-items-center ">
+            <div>
+              <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+              Bandwidth Status : Good
+            </div>
+
+          </div>
+
+        </div>
+        <ng-template #elseBlock3>
+          <div class="alert alert-danger align-items-center ">
+            <div>
+              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+              Bandwidth Status : Bad
+            </div>
+
+          </div>
+
+        </ng-template>
+
+
+        <!-- for traffic -->
+
+        <div *ngIf="latestTrafficReading?.reading_value <600; else elseBlock4">
+          <div class="alert alert-success align-items-center ">
+            <div>
+              <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+              Traffic Status : Good
+            </div>
+
+          </div>
+
+        </div>
+        <ng-template #elseBlock4>
+          <div class="alert alert-danger align-items-center ">
+            <div>
+              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+              Traffic Status : Bad
+            </div>
+
+          </div>
+
+        </ng-template>
+        
+
+
+
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="check-circle-fill" viewBox="0 0 16 16">
+    <path
+      d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+  </symbol>
+  <symbol id="info-fill" viewBox="0 0 16 16">
+    <path
+      d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+  </symbol>
+  <symbol id="exclamation-triangle-fill" viewBox="0 0 16 16">
+    <path
+      d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+  </symbol>
+</svg>
